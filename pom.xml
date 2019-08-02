@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.marketconnect.flume</groupId>
+    <artifactId>flume-typehbaseevent-serializer</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Flume Type Hbase Event Plugin</name>
+    <description>Flume Type Hbase Event Plugin</description>
+    <inceptionYear>2019</inceptionYear>
+
+    <properties>
+        <flume.version>1.5.2</flume.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <hadoop.version>1.0.1</hadoop.version>
+        <hbase.version>0.92.1</hbase.version>
+        <hadoop.common.artifact.id>hadoop-core</hadoop.common.artifact.id>
+
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+    </properties>
+
+    <organization>
+        <name>Market Connect</name>
+        <url>http://www.click2buy.com/</url>
+    </organization>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.flume</groupId>
+                <artifactId>flume-parent</artifactId>
+                <version>${flume.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.flume</groupId>
+            <artifactId>flume-ng-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flume.flume-ng-sinks</groupId>
+            <artifactId>flume-ng-hbase-sink</artifactId>
+        </dependency>
+          <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>${hadoop.common.artifact.id}</artifactId>
+            <version>${hadoop.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-test</artifactId>
+            <version>${hadoop.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase</artifactId>
+            <version>${hbase.version}</version>
+          </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.jrh3k5</groupId>
+                <artifactId>flume-plugin-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-project-plugin</id>
+                        <goals>
+                            <goal>build-project-plugin</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
