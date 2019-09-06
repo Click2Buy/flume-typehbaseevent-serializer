@@ -99,6 +99,8 @@ public class TypeHbaseEventSerializer implements HbaseEventSerializer {
           }
       }
       actions.add(put);
+    } catch (IllegalArgumentException e) {
+      throw new FlumeException(e + " row key " + Bytes.toString(rowKey));
     } catch (Exception e) {
       throw new FlumeException(e);
     }
