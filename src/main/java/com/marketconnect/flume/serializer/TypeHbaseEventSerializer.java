@@ -1,5 +1,7 @@
 package com.marketconnect.flume.serializer;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -83,26 +85,35 @@ public class TypeHbaseEventSerializer implements HbaseEventSerializer {
       for (Map.Entry<String, String> entry : headers.entrySet()) {
           String entryStr = entry.getKey();
           String valueStr = entry.getValue();
+          if (valueStr == null) continue;
           String type = colNames.get(entryStr);
-          if ("string".equalsIgnoreCase(type)) {
-              put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(valueStr));
-          } else if ("double".equalsIgnoreCase(type)) {
-              put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Double.parseDouble(valueStr)));
-          } else if ("float".equalsIgnoreCase(type)) {
-              put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Float.parseFloat(valueStr)));
-          } else if ("int".equalsIgnoreCase(type)) {
-              put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Integer.parseInt(valueStr)));
-          } else if ("long".equalsIgnoreCase(type)) {
-              put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Long.parseLong(valueStr)));
-          } else if ("short".equalsIgnoreCase(type)) {
-              put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Short.parseShort(valueStr)));
+          try {
+              if ("string".equalsIgnoreCase(type)) {
+                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(valueStr));
+              } else if ("double".equalsIgnoreCase(type)) {
+                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Double.parseDouble(valueStr)));
+              } else if ("float".equalsIgnoreCase(type)) {
+                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Float.parseFloat(valueStr)));
+              } else if ("int".equalsIgnoreCase(type)) {
+                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Integer.parseInt(valueStr)));
+              } else if ("long".equalsIgnoreCase(type)) {
+                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Long.parseLong(valueStr)));
+              } else if ("short".equalsIgnoreCase(type)) {
+                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Short.parseShort(valueStr)));
+              }
+          } catch (Exception e) {
+              StringWriter sw = new StringWriter();
+              e.printStackTrace(new PrintWriter(sw));
+              String exceptionAsString = sw.toString();
+              throw new FlumeException(e.toString() + " row key " + Bytes.toString(rowKey) + " entryStr " + entryStr + "valueStr " + valueStr + " type " + type + " " + exceptionAsString);
           }
       }
       actions.add(put);
-    } catch (IllegalArgumentException e) {
-      throw new FlumeException(e + " row key " + Bytes.toString(rowKey));
     } catch (Exception e) {
-      throw new FlumeException(e);
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String exceptionAsString = sw.toString();
+        throw new FlumeException(e.toString() + " row key " + Bytes.toString(rowKey) + exceptionAsString);
     }
     return actions;
   }
