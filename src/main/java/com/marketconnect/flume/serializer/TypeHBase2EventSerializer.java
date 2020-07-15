@@ -10,7 +10,7 @@ import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.FlumeException;
 import org.apache.flume.conf.ComponentConfiguration;
-import org.apache.flume.sink.hbase.HbaseEventSerializer;
+import org.apache.flume.sink.hbase2.HBase2EventSerializer;
 import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Row;
@@ -20,7 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
 
-public class TypeHbaseEventSerializer implements HbaseEventSerializer {
+public class TypeHBase2EventSerializer implements HBase2EventSerializer {
   // Config vars
   /** Type used to send data to hbase. */
   public static final String TYPES_CONFIG = "types";
@@ -89,17 +89,17 @@ public class TypeHbaseEventSerializer implements HbaseEventSerializer {
           String type = colNames.get(entryStr);
           try {
               if ("string".equalsIgnoreCase(type)) {
-                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(valueStr));
+                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(valueStr));
               } else if ("double".equalsIgnoreCase(type)) {
-                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Double.parseDouble(valueStr)));
+                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Double.parseDouble(valueStr)));
               } else if ("float".equalsIgnoreCase(type)) {
-                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Float.parseFloat(valueStr)));
+                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Float.parseFloat(valueStr)));
               } else if ("int".equalsIgnoreCase(type)) {
-                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Integer.parseInt(valueStr)));
+                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Integer.parseInt(valueStr)));
               } else if ("long".equalsIgnoreCase(type)) {
-                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Long.parseLong(valueStr)));
+                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Long.parseLong(valueStr)));
               } else if ("short".equalsIgnoreCase(type)) {
-                  put.add(cf, entryStr.getBytes(charset), Bytes.toBytes(Short.parseShort(valueStr)));
+                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Short.parseShort(valueStr)));
               }
           } catch (Exception e) {
               StringWriter sw = new StringWriter();

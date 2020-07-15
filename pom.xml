@@ -14,15 +14,14 @@
     <inceptionYear>2019</inceptionYear>
 
     <properties>
-        <flume.version>1.5.2</flume.version>
+        <flume.version>1.9.0</flume.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <hadoop.version>1.0.1</hadoop.version>
-        <hbase.version>0.92.1</hbase.version>
-        <hadoop.common.artifact.id>hadoop-core</hadoop.common.artifact.id>
+        <hadoop.version>2.9.0</hadoop.version>
+        <hbase2.version>2.0.0</hbase2.version>
 
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
 
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
@@ -52,22 +51,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flume.flume-ng-sinks</groupId>
-            <artifactId>flume-ng-hbase-sink</artifactId>
+            <artifactId>flume-ng-hbase2-sink</artifactId>
         </dependency>
           <dependency>
             <groupId>org.apache.hadoop</groupId>
-            <artifactId>${hadoop.common.artifact.id}</artifactId>
-            <version>${hadoop.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-test</artifactId>
+            <artifactId>hadoop-client</artifactId>
             <version>${hadoop.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase</artifactId>
-            <version>${hbase.version}</version>
+            <artifactId>hbase-client</artifactId>
+            <version>${hbase2.version}</version>
           </dependency>
     </dependencies>
 
