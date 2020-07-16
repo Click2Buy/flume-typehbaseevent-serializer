@@ -3,6 +3,7 @@ package com.marketconnect.flume.serializer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
   public void initialize(Event event, byte[] columnFamily) {
     this.headers = event.getHeaders();
     this.payload = event.getBody();
-    this.cf = columnFamily;
+    this.cf = Arrays.copyOf(columnFamily, columnFamily.length);
   }
 
   @Override
@@ -79,42 +80,35 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
       return Lists.newArrayList();
     }
 
-    try {
-      Put put = new Put(rowKey);
+    Put put = new Put(rowKey);
 
-      for (Map.Entry<String, String> entry : headers.entrySet()) {
-          String entryStr = entry.getKey();
-          String valueStr = entry.getValue();
-          if (valueStr == null) continue;
-          String type = colNames.get(entryStr);
-          try {
-              if ("string".equalsIgnoreCase(type)) {
-                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(valueStr));
-              } else if ("double".equalsIgnoreCase(type)) {
-                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Double.parseDouble(valueStr)));
-              } else if ("float".equalsIgnoreCase(type)) {
-                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Float.parseFloat(valueStr)));
-              } else if ("int".equalsIgnoreCase(type)) {
-                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Integer.parseInt(valueStr)));
-              } else if ("long".equalsIgnoreCase(type)) {
-                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Long.parseLong(valueStr)));
-              } else if ("short".equalsIgnoreCase(type)) {
-                  put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Short.parseShort(valueStr)));
-              }
-          } catch (Exception e) {
-              StringWriter sw = new StringWriter();
-              e.printStackTrace(new PrintWriter(sw));
-              String exceptionAsString = sw.toString();
-              throw new FlumeException(e.toString() + " row key " + Bytes.toString(rowKey) + " entryStr " + entryStr + "valueStr " + valueStr + " type " + type + " " + exceptionAsString);
-          }
-      }
-      actions.add(put);
-    } catch (Exception e) {
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        String exceptionAsString = sw.toString();
-        throw new FlumeException(e.toString() + " row key " + Bytes.toString(rowKey) + exceptionAsString);
+    for (Map.Entry<String, String> entry : headers.entrySet()) {
+        String entryStr = entry.getKey();
+        String valueStr = entry.getValue();
+        if (valueStr == null) continue;
+        String type = colNames.get(entryStr);
+        try {
+            if ("string".equalsIgnoreCase(type)) {
+                put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(valueStr));
+            } else if ("double".equalsIgnoreCase(type)) {
+                put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Double.parseDouble(valueStr)));
+            } else if ("float".equalsIgnoreCase(type)) {
+                put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Float.parseFloat(valueStr)));
+            } else if ("int".equalsIgnoreCase(type)) {
+                put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Integer.parseInt(valueStr)));
+            } else if ("long".equalsIgnoreCase(type)) {
+                put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Long.parseLong(valueStr)));
+            } else if ("short".equalsIgnoreCase(type)) {
+                put.addColumn(cf, entryStr.getBytes(charset), Bytes.toBytes(Short.parseShort(valueStr)));
+            }
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            throw new FlumeException(e.toString() + " row key " + Bytes.toString(rowKey) + " entryStr " + entryStr + "valueStr " + valueStr + " type " + type + " " + exceptionAsString);
+        }
     }
+    actions.add(put);
     return actions;
   }
 
