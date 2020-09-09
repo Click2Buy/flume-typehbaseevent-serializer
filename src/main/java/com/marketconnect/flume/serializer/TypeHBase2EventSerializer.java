@@ -77,7 +77,11 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
     byte[] rowKey = this.payload;
 
     if (rowKey.length == 0) {
-      return Lists.newArrayList();
+        return Lists.newArrayList();
+    }
+
+    if (headers.isEmpty()) {
+        return Lists.newArrayList();
     }
 
     Put put = new Put(rowKey);
