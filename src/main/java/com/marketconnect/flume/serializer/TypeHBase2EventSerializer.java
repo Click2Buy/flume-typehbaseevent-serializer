@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,10 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
   public static final String TYPES_CONFIG = "types";
   public static final String TYPES_DEFAULT = "string";
 
+  /** Column name to increment. */
+  public static final String INCCOL_NAME_CONFIG = "incrementColumn";
+  public static final String INCCOLUMN_NAME_DEFAULT = null;
+
   /** Comma separated list of column names to place matching groups in. */
   public static final String COL_NAME_CONFIG = "colNames";
   public static final String COLUMN_NAME_DEFAULT = "col";
@@ -39,6 +44,7 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
   private byte[] payload;
   private Map<String, String> colNames;
   private Map<String, String> headers;
+  private byte[] incCol;
   private Charset charset;
 
   @Override
@@ -52,6 +58,12 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
     String colNameStr = context.getString(COL_NAME_CONFIG, COLUMN_NAME_DEFAULT);
     String[] columnNames = colNameStr.split(",");
 
+    String incColumn = context.getString(INCCOL_NAME_CONFIG, INCCOLUMN_NAME_DEFAULT);
+    if (incColumn != null && !incColumn.isEmpty()) {
+        this.incCol = incColumn.getBytes(charset);
+    } else {
+        this.incCol = null;
+    }
     this.colNames = Maps.newHashMap();
     for (int i = 0; i < columnNames.length; i++) {
         String c = columnNames[i];
@@ -118,7 +130,14 @@ public class TypeHBase2EventSerializer implements HBase2EventSerializer {
 
   @Override
   public List<Increment> getIncrements() {
-    return Lists.newArrayList();
+    List<Increment> incs = new LinkedList<>();
+    byte[] rowKey = this.payload;
+    if (incCol != null && rowKey.length > 0) {
+      Increment inc = new Increment(rowKey);
+      inc.addColumn(cf, incCol, 1);
+      incs.add(inc);
+    }
+    return incs;
   }
 
   @Override
